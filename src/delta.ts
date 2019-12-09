@@ -1,9 +1,16 @@
 import axios from 'axios';
 import { Logger } from './logger';
+const logger = new Logger('delta');
 
-const BaseURL = 'http://localhost:18080/';
+if (!process.env.DELTA_SERVER_PORT) {
+    logger.error('DELTA_SERVER_PORT');
+    process.exit(-1);
+}
 
-const logger = new Logger('delta')
+const BaseURL = `http://localhost:${process.env.DELTA_SERVER_PORT}/`;
+
+
+logger.info('애플리케이션 서버 주소 ' + BaseURL);
 
 let token = null;
 async function getToken() {
@@ -18,9 +25,10 @@ async function getToken() {
     logger.info('토큰 발급 요청 완료');
     token = response.data.token;
     logger.info('발급된 토큰: ' + token);
+    return token;
 }
 
-export async function create() {
+export async function createAppServer() {
     const instance = axios.create({
         baseURL: BaseURL,
         timeout: 5000,
