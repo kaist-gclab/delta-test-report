@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-CONTAINER_NAMES="delta-app-server delta-object-storage delta-postgres" 
-sudo docker stop $CONTAINER_NAMES
-sudo docker rm $CONTAINER_NAMES
-
 cd "$DIR/delta-server/config" && \
     rm -rf $DELTA_POSTGRES_DATA_DIRECTORY && \
     mkdir -p $DELTA_POSTGRES_DATA_DIRECTORY && \

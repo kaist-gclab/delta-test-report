@@ -20,6 +20,7 @@ export DELTA_OBJECT_STORAGE_ENDPOINT="delta-object-storage:9000"
 export DELTA_SERVER_PORT="18080"
 
 ./clone.sh
+./clean.sh
 ./up.sh
 
 DATABASE_INIT_DELAY="10"
@@ -27,3 +28,4 @@ echo "데이터베이스 서버 초기화 작업이 완료될 수 있도록 더 
 sleep $DATABASE_INIT_DELAY
 
 ./test.sh
+./clean.sh
