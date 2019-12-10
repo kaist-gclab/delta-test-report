@@ -1,5 +1,5 @@
 import { Logger } from '../logger';
-import { createAppServer } from '../delta';
+import { createAppServer, getAssetCount, addAsset, readAsset } from '../delta';
 import crypto = require('crypto');
 import moment = require('moment');
 import { Stream } from 'stream';
@@ -10,13 +10,7 @@ const TotalSize = Math.ceil(0.3 * 1024 * 1024 * 1024 * 1024);
 
 const logger = new Logger('store');
 
-async function getAssetCount() {
-    const server = await createAppServer();
-    const assets: any[] = (await server.get('api/1/assets')).data;
-    return assets.length;
-}
-
-function getRandomText(seed: number, size: number) {
+export function getRandomText(seed: number, size: number) {
     const hash = crypto.createHash('SHA256');
     hash.update(RandomSeed + ' ' + seed.toString());
     const key = hash.digest().toString('hex');
@@ -29,24 +23,6 @@ function getRandomText(seed: number, size: number) {
         text += add;
     }
     return text;
-}
-
-async function addAsset(data: string): Promise<void> {
-    const server = await createAppServer();
-    const asset = (await server.post('api/1/assets', { content: data })).data;
-    const assetId = asset.id;
-    const value = '에셋 # ' + assetId;
-    await server.post(`api/1/assets/${assetId}/tags`, {
-        key: 'CustomKey',
-        value,
-    });
-}
-
-async function readAsset(assetId: string): Promise<Stream> {
-    const server = await createAppServer();
-    const response = await server.get(`api/1/assets/${assetId}/download`,
-        { responseType: 'stream' });
-    return response.data;
 }
 
 async function testCompleteListLatency() {
@@ -76,18 +52,6 @@ async function testSearchLatency(assetId: number) {
     logger.info(`검색 요청한 에셋은 ${assetId}번이며, 반환된 에셋은 ${assets[0].id}번입니다.`);
 }
 
-// https://stackoverflow.com/questions/10623798/how-do-i-read-the-contents-of-a-node-js-stream-into-a-string-variable
-function streamToString(stream: Stream): Promise<string> {
-    const chunks = [];
-    return new Promise((resolve, reject) => {
-        stream.on('data', chunk => chunks.push(chunk));
-        stream.on('error', reject);
-        stream.on('end', () => {
-            const text = Buffer.concat(chunks).toString('utf8');
-            resolve(text.substr(1, text.length - 2));
-        });
-    });
-}
 
 export async function run() {
     logger.info('store');
@@ -137,4 +101,23 @@ export async function run() {
     }
     await testCompleteListLatency();
     logger.info('3차원 모델 저장소 전체 크기 테스트를 완료했습니다.');
+}
+
+// https://stackoverflow.com/questions/10623798/how-do-i-read-the-contents-of-a-node-js-stream-into-a-string-variable
+async function streamToString(stream: Stream): Promise<string> {
+    const buffer = await streamToBuffer(stream);
+    const str = buffer.toString('utf8');
+    return str.substr(1, str.length - 2);
+}
+
+export function streamToBuffer(stream: Stream): Promise<Buffer> {
+    const chunks = [];
+    return new Promise((resolve, reject) => {
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('error', reject);
+        stream.on('end', () => {
+            const buffer = Buffer.concat(chunks);
+            resolve(buffer);
+        });
+    });
 }

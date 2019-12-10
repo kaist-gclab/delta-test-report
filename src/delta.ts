@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Stream } from 'stream';
 import { Logger } from './logger';
 const logger = new Logger('delta');
 
@@ -8,7 +9,6 @@ if (!process.env.DELTA_SERVER_PORT) {
 }
 
 const BaseURL = `http://localhost:${process.env.DELTA_SERVER_PORT}/`;
-
 
 logger.info('애플리케이션 서버 주소 ' + BaseURL);
 
@@ -36,4 +36,38 @@ export async function createAppServer() {
         maxContentLength: 1024 * 1024 * 200,
     })
     return instance;
+}
+
+export async function getAssetCount() {
+    const server = await createAppServer();
+    const assets: any[] = (await server.get('api/1/assets')).data;
+    return assets.length;
+}
+
+export async function addAsset(data: string, encrypt: boolean = false): Promise<any> {
+    const server = await createAppServer();
+    if (encrypt) {
+        await server.post('api/1/encryptionKeys', {
+            name: "KeyName", enabled: true
+        });
+    }
+    const asset = (await server.post('api/1/assets', {
+        content: data,
+        encryptionKeyName: encrypt ? "KeyName" : undefined,
+    })).data;
+
+    const assetId = asset.id;
+    const value = '에셋 # ' + assetId;
+    await server.post(`api/1/assets/${assetId}/tags`, {
+        key: 'CustomKey',
+        value,
+    });
+    return asset;
+}
+
+export async function readAsset(assetId: string): Promise<Stream> {
+    const server = await createAppServer();
+    const response = await server.get(`api/1/assets/${assetId}/download`,
+        { responseType: 'stream' });
+    return response.data;
 }
