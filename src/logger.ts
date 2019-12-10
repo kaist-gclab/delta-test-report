@@ -1,4 +1,5 @@
 import moment = require('moment');
+import fs = require('fs');
 
 export class Logger {
 
@@ -8,7 +9,9 @@ export class Logger {
     }
     public log(level: string, message: string): void {
         const timestamp = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
-        console.log(`${timestamp} ${this.category}\t${level}\t${message}`);
+        const line = `${timestamp} ${this.category}\t${level}\t${message}`;
+        console.log(line);
+        fs.appendFileSync('log.txt', line + '\n');
     }
 
     public info(message: string): void {
