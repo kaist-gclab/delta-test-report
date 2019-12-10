@@ -75,7 +75,12 @@ export async function run() {
     for (let assetId = 1; assetId <= assets; assetId++) {
         const data = getRandomText(assetId, AssetSize);
         await addAsset(data);
-        logger.info(`${assetId}번 에셋을 추가했습니다.`);
+        if (assetId <= 10 || (assetId - 1) % 100 === 0 || assetId == assets) {
+            logger.info(`${assetId}번 에셋을 추가했습니다.`);
+        }
+        if (assetId === 10) {
+            logger.info('11번 에셋부터 동일한 결과는 100개 단위로 줄여 출력합니다.');
+        }
     }
     logger.info(`에셋 전체 ${assets}개를 추가했습니다.`);
     for (let assetId = 1; assetId <= assets; assetId++) {
@@ -85,7 +90,12 @@ export async function run() {
         if (expect !== actualString) {
             logger.error(`${assetId}번 에셋 내용이 손상되었습니다.`);
         } else {
-            logger.info(`${assetId}번 에셋 내용이 일치합니다.`);
+            if (assetId <= 10 || (assetId - 1) % 100 === 0 || assetId == assets) {
+                logger.info(`${assetId}번 에셋 내용이 일치합니다.`);
+            }
+            if (assetId === 10) {
+                logger.info('11번 에셋부터 동일한 결과는 100개 단위로 줄여 출력합니다.');
+            }
         }
     }
     await testLatency();
