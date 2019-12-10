@@ -31,8 +31,9 @@ async function getToken() {
 export async function createAppServer() {
     const instance = axios.create({
         baseURL: BaseURL,
-        timeout: 5000,
+        timeout: 60 * 1000,
         headers: { 'Authorization': `Bearer ${await getToken()}` },
+        maxContentLength: 1024 * 1024 * 200,
     })
     return instance;
 }

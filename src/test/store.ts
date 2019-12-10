@@ -1,20 +1,93 @@
 import { Logger } from '../logger';
 import { createAppServer } from '../delta';
+import crypto = require('crypto');
+import moment = require('moment');
+import { Stream } from 'stream';
 
-// 1. 3차원 모델 저장소 전체 크기 0.3TB
-//     에셋 추가 반복
-//     저장소에 대량의 3차원 모델을 입력하여, 전체 프레임워크에 등록될 수 있는 3차원 모델의 크기의 합계를 계산함. 이때, 지연 시간과 같은 기타 정량적 성능 항목의 달성 여부에 영향이 없어야 함.
-
-
-// 4. 단일 3차원 모델 크기 50MB
-//     크기가 큰 3차원 모델을 입력하여, 기본 작업이 문제없이 처리될 수 있는
-//     단일 3차원 모델 크기를 계산함. 이때, 지연 시간과 같은 기타 정량적 성능 항목의 달성 여부에 영향이 없어야 함. 이 평가 항목은 프레임워크에서 제공하는 세부적인 알고리즘의 성능 사양이 아닌 클라우드 시스템의 성능 사양을 측정하는 것으로서, 처리 항목은 렌더링, 자료 구조 형성과 같은 기본 작업으로 한정함.
+const RandomSeed = 'TEST20191210';
+const AssetSize = 50 * 1024 * 1024;
+const TotalSize = Math.ceil(0.3 * 1024 * 1024 * 1024 * 1024);
 
 const logger = new Logger('store');
 
+async function getAssetCount() {
+    const server = await createAppServer();
+    const assets: any[] = (await server.get('api/1/assets')).data;
+    return assets.length;
+}
+
+function getRandomText(seed: number, size: number) {
+    const hash = crypto.createHash('SHA256');
+    hash.update(RandomSeed + ' ' + seed.toString());
+    const key = hash.digest().toString('hex');
+    let text = '';
+    while (text.length < size) {
+        let add = key;
+        if (text.length + key.length > size) {
+            add = key.substr(0, size - text.length);
+        }
+        text += add;
+    }
+    return text;
+}
+
+async function addAsset(data: string): Promise<void> {
+    const server = await createAppServer();
+    await server.post('api/1/assets', { Content: data });
+}
+
+async function readAsset(assetId: string): Promise<Stream> {
+    const server = await createAppServer();
+    const response = await server.get(`api/1/assets/${assetId}/download`,
+        { responseType: 'stream' });
+    return response.data;
+}
+
+async function testLatency() {
+    const begin = moment();
+    logger.info(`에셋 ${await getAssetCount()}개가 조회되었습니다.`);
+    const end = moment();
+    const duration = moment.duration(end.diff(begin)).asSeconds();
+    logger.info(`에셋 목록 조회 작업에 ${duration}초가 소요되었습니다.`);
+}
+
+// https://stackoverflow.com/questions/10623798/how-do-i-read-the-contents-of-a-node-js-stream-into-a-string-variable
+function streamToString(stream: Stream): Promise<string> {
+    const chunks = [];
+    return new Promise((resolve, reject) => {
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('error', reject);
+        stream.on('end', () => {
+            const text = Buffer.concat(chunks).toString('utf8');
+            resolve(text.substr(1, text.length - 2));
+        });
+    });
+}
+
 export async function run() {
     logger.info('store');
-    const server = await createAppServer();
-    const r = await server.get('api/1/assets');
-    console.log(r.data);
+    logger.info(`SHA-256 salt ${RandomSeed}`);
+    await getAssetCount();
+    await testLatency();
+    logger.info(`단일 에셋 크기 ${AssetSize / 1024 / 1024} MB`);
+    logger.info(`목표 에셋 크기 합계 ${Math.floor(TotalSize / 1024 / 1024)} MB`);
+    const assets = Math.ceil(TotalSize / AssetSize);
+    for (let assetId = 1; assetId <= assets; assetId++) {
+        const data = getRandomText(assetId, AssetSize);
+        await addAsset(data);
+        logger.info(`${assetId}번 에셋을 추가했습니다.`);
+    }
+    logger.info(`에셋 전체 ${assets}개를 추가했습니다.`);
+    for (let assetId = 1; assetId <= assets; assetId++) {
+        const expect: string = getRandomText(assetId, AssetSize);
+        const actual: Stream = await readAsset(assetId.toString());
+        const actualString = await streamToString(actual);
+        if (expect !== actualString) {
+            logger.error(`${assetId}번 에셋 내용이 손상되었습니다.`);
+        } else {
+            logger.info(`${assetId}번 에셋 내용이 일치합니다.`);
+        }
+    }
+    await testLatency();
+    logger.info('3차원 모델 저장소 전체 크기 테스트를 완료했습니다.');
 }
