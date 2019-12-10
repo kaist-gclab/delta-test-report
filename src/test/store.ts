@@ -82,7 +82,7 @@ export async function run() {
             logger.info('11번 에셋부터 동일한 결과는 100개 단위로 줄여 출력합니다.');
         }
     }
-    logger.info(`에셋 전체 ${assets}개를 추가했습니다.`);
+    logger.info(`에셋을 모두 ${assets}개 추가했습니다.`);
     for (let assetId = 1; assetId <= assets; assetId++) {
         const expect: string = getRandomText(assetId, AssetSize);
         const actual: Stream = await readAsset(assetId.toString());
