@@ -33,7 +33,13 @@ function getRandomText(seed: number, size: number) {
 
 async function addAsset(data: string): Promise<void> {
     const server = await createAppServer();
-    await server.post('api/1/assets', { Content: data });
+    const asset = (await server.post('api/1/assets', { content: data })).data;
+    const assetId = asset.id;
+    const value = '에셋 # ' + assetId;
+    await server.post(`api/1/assets/${assetId}/tags`, {
+        key: 'CustomKey',
+        value,
+    });
 }
 
 async function readAsset(assetId: string): Promise<Stream> {
@@ -43,12 +49,31 @@ async function readAsset(assetId: string): Promise<Stream> {
     return response.data;
 }
 
-async function testLatency() {
+async function testCompleteListLatency() {
     const begin = moment();
-    logger.info(`에셋 ${await getAssetCount()}개가 조회되었습니다.`);
+    const count = await getAssetCount();
     const end = moment();
     const duration = moment.duration(end.diff(begin)).asSeconds();
-    logger.info(`에셋 목록 조회 작업에 ${duration}초가 소요되었습니다.`);
+    logger.info(`전체 에셋 목록 조회 작업에 ${duration}초가 소요되었습니다.`);
+    logger.info(`전체 에셋 조회 결과로 ${count}개가 반환되었습니다.`);
+}
+
+async function testSearchLatency(assetId: number) {
+    const value = '에셋 # ' + assetId;
+    const server = await createAppServer();
+    const begin = moment();
+    const response = await server.get('api/1/assets', {
+        params: {
+            assetTagKey: 'CustomKey',
+            assetTagValue: value,
+        }
+    });
+    const end = moment();
+    const duration = moment.duration(end.diff(begin)).asSeconds();
+    logger.info(`에셋 태그를 이용한 에셋 검색 작업에 ${duration}초가 소요되었습니다.`);
+    const assets = response.data;
+    logger.info(`에셋 태그를 이용한 에셋 검색 결과로 ${assets.length}개가 조회되었습니다.`);
+    logger.info(`검색 요청한 에셋은 ${assetId}번이며, 반환된 에셋은 ${assets[0].id}번입니다.`);
 }
 
 // https://stackoverflow.com/questions/10623798/how-do-i-read-the-contents-of-a-node-js-stream-into-a-string-variable
@@ -68,7 +93,7 @@ export async function run() {
     logger.info('store');
     logger.info(`SHA-256 salt ${RandomSeed}`);
     await getAssetCount();
-    await testLatency();
+    await testCompleteListLatency();
     logger.info(`단일 에셋 크기 ${AssetSize / 1024 / 1024} MB`);
     logger.info(`목표 에셋 크기 합계 ${Math.floor(TotalSize / 1024 / 1024)} MB`);
     const assets = Math.ceil(TotalSize / AssetSize);
@@ -76,8 +101,13 @@ export async function run() {
         const data = getRandomText(assetId, AssetSize);
         await addAsset(data);
         if (assetId <= 5 || (assetId - 1) % 100 === 0 || assetId == assets) {
-            logger.info(`${assetId}번 에셋을 추가했습니다.`);
-            await testLatency();
+            logger.info(`${assetId}번 에셋 및 태그를 추가했습니다.`);
+            const target = Math.floor((1 + assetId) / 2);
+            logger.info(`에셋 태그를 이용하여 ${target}번 에셋을 검색합니다.`);
+            await testSearchLatency(target);
+        }
+        if (assetId == 1 || assetId == assets) {
+            await testCompleteListLatency();
         }
         if (assetId === 5) {
             logger.info('6번 에셋부터 동일한 결과는 100개 단위로 줄여 출력합니다.');
@@ -93,13 +123,18 @@ export async function run() {
         } else {
             if (assetId <= 5 || (assetId - 1) % 100 === 0 || assetId == assets) {
                 logger.info(`${assetId}번 에셋 내용이 일치합니다.`);
-                await testLatency();
+                const target = Math.floor((1 + assetId) / 2);
+                logger.info(`에셋 태그를 이용하여 ${target}번 에셋을 검색합니다.`);
+                await testSearchLatency(target);
+            }
+            if (assetId == 1 || assetId == assets) {
+                await testCompleteListLatency();
             }
             if (assetId === 5) {
                 logger.info('6번 에셋부터 동일한 결과는 100개 단위로 줄여 출력합니다.');
             }
         }
     }
-    await testLatency();
+    await testCompleteListLatency();
     logger.info('3차원 모델 저장소 전체 크기 테스트를 완료했습니다.');
 }
