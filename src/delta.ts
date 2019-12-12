@@ -20,7 +20,7 @@ async function getToken() {
     logger.info('토큰 발급 요청 시작');
     const response = await axios.post(BaseURL + 'auth/1/login', {
         Username: 'DefaultAdminUser',
-        Password: 'TEST_DELTA_ADMIN_PASSWORD',
+        Password: process.env.DELTA_AUTH_ADMIN_PASSWORD,
     });
     logger.info('토큰 발급 요청 완료');
     token = response.data.token;
@@ -69,9 +69,96 @@ export async function addAsset(data: string, encrypt: boolean = false): Promise<
     return asset;
 }
 
+export async function addProcessorType(key: string): Promise<any> {
+    const server = await createAppServer();
+    const processorType = (await server.post('api/1/processors/types',
+        { key: key })).data;
+    return processorType;
+}
+
+export async function registerProcessorNode(registerProcessorNodeRequest): Promise<any> {
+    const server = await createAppServer();
+    const processorNode = (await server.post('api/1/processors/nodes/register',
+        registerProcessorNodeRequest)).data;
+    return processorNode;
+}
+
 export async function readAsset(assetId: string): Promise<Stream> {
     const server = await createAppServer();
+    const logger = new Logger('delta');
+    logger.info(`GET api/1/assets/${assetId}/download`);
     const response = await server.get(`api/1/assets/${assetId}/download`,
         { responseType: 'stream' });
     return response.data;
+}
+
+interface JobExecution {
+    id: number
+    jobId: number
+    processorNodeId: number
+    job: Job
+    childAssets: Asset[]
+}
+
+interface Asset {
+    id: number
+}
+
+interface Job {
+    id: number
+    inputAssetId: number
+}
+
+export async function schedule(processorNodeId: number): Promise<JobExecution> {
+    const server = await createAppServer();
+    const jobExecution: JobExecution = (await server.post(`api/1/jobs/schedule`,
+        { processorNodeId })).data;;
+    return jobExecution;
+}
+
+interface AddJobRequest {
+    inputAssetId: number
+    jobArguments: string
+    processorVersionKey: string
+}
+
+export async function addJob(addJobRequest: AddJobRequest): Promise<JobExecution> {
+    const server = await createAppServer();
+    const logger = new Logger('delta');
+    logger.info('POST api/1/jobs');
+    const job = (await server.post(`api/1/jobs`, addJobRequest)).data;
+    return job;
+}
+
+interface AddJobResultRequest {
+    jobExecutionId: number
+    resultAssets: RequestResultAsset[]
+}
+
+interface RequestResultAsset {
+    assetFormatKey: string
+    assetTypeKey: string
+    assetTags?: RequestAssetTag[]
+    content: string
+}
+
+interface RequestAssetTag {
+    key: string
+    value: string
+}
+
+export async function addJobResult(addJobResultRequest: AddJobResultRequest): Promise<any> {
+    const server = await createAppServer();
+    const logger = new Logger('delta');
+    logger.info('POST api/1/jobs/result');
+    const jobExecutionStatus = (await server.post('api/1/jobs/result', addJobResultRequest)).data;
+    return jobExecutionStatus;
+}
+
+export async function getJobExecution(id: number): Promise<JobExecution> {
+    const server = await createAppServer();
+    const logger = new Logger('delta');
+    logger.info(`GET api/1/jobs/executions/${id}`);
+    const jobExecution: JobExecution = (await server.get(`api/1/jobs/executions/${id}`)).data;
+    return jobExecution;
 }

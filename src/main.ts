@@ -4,8 +4,8 @@ import { run as testFormats } from './test/formats';
 import { run as testEncryption } from './test/encryption';
 
 export async function run() {
-    await testStore();
-    await testNodes();
-    await testFormats();
-    await testEncryption();
+    // await testStore();
+    // await testNodes();
+    // await testFormats();
+    // await testEncryption();
 }
