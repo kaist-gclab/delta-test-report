@@ -104,7 +104,7 @@ export async function run() {
 }
 
 // https://stackoverflow.com/questions/10623798/how-do-i-read-the-contents-of-a-node-js-stream-into-a-string-variable
-async function streamToString(stream: Stream): Promise<string> {
+export async function streamToString(stream: Stream): Promise<string> {
     const buffer = await streamToBuffer(stream);
     const str = buffer.toString('utf8');
     return str.substr(1, str.length - 2);

@@ -44,12 +44,16 @@ export async function getAssetCount() {
     return assets.length;
 }
 
+let keyCreated = false;
 export async function addAsset(data: string, encrypt: boolean = false): Promise<any> {
     const server = await createAppServer();
     if (encrypt) {
-        await server.post('api/1/encryptionKeys', {
-            name: "KeyName", enabled: true
-        });
+        if (!keyCreated) {
+            await server.post('api/1/encryptionKeys', {
+                name: "KeyName", enabled: true
+            });
+            keyCreated = true;
+        }
     }
     const asset = (await server.post('api/1/assets', {
         content: data,

@@ -1,6 +1,6 @@
 import { Logger } from '../logger';
-import { addAsset } from '../delta';
-import { getRandomText, streamToBuffer } from './store';
+import { addAsset, readAsset } from '../delta';
+import { getRandomText, streamToBuffer, streamToString } from './store';
 import { readObject } from '../s3';
 const AssetSize = 50 * 1024 * 1024;
 const logger = new Logger('encryption');
@@ -9,11 +9,11 @@ function getBufferBoundaries(data: Buffer) {
     const arr = [...data];
 
     const left = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 16; i++) {
         left.push(Buffer.from([arr[i]]).toString('hex'));
     }
     const right = [];
-    for (let i = arr.length - 8; i < arr.length; i++) {
+    for (let i = arr.length - 16; i < arr.length; i++) {
         right.push(Buffer.from([arr[i]]).toString('hex'));
     }
     return left.join(' ') + '...' + right.join(' ');
@@ -29,17 +29,39 @@ export async function run() {
     logger.info('data' + getBufferSummary(Buffer.from(data)));
     const assetA = await addAsset(data);
     logger.info('assetA => ' + assetA.storeKey);
-    const streamA = await readObject(assetA.storeKey);
-    logger.info('dataA' + getBufferSummary(await streamToBuffer(streamA)));
+    const objA = await streamToBuffer(await readObject(assetA.storeKey));
+    logger.info('objA' + getBufferSummary(objA));
 
-    const assetB = await addAsset(data);
-    logger.info('assetB => ' + assetB.storeKey);
-    const streamB = await readObject(assetB.storeKey);
-
-    logger.info('dataB' + getBufferSummary(await streamToBuffer(streamB)));
+    const assetB = await addAsset(data, true);
+    logger.info('assetB(암호화 적용) => ' + assetB.storeKey);
+    const objB = await streamToBuffer(await readObject(assetB.storeKey));
+    logger.info('objB' + getBufferSummary(objB));
 
     const assetC = await addAsset(data, true);
     logger.info('assetC(암호화 적용) => ' + assetC.storeKey);
-    const streamC = await readObject(assetC.storeKey);
-    logger.info('dataC' + getBufferSummary(await streamToBuffer(streamC)));
+    const objC = await streamToBuffer(await readObject(assetC.storeKey));
+    logger.info('objC' + getBufferSummary(objC));
+
+    if (Buffer.compare(objA, objB) !== 0 &&
+        Buffer.compare(objA, objC) !== 0 &&
+        Buffer.compare(objB, objC) !== 0) {
+        logger.info('오브젝트 저장소에 암호화 적용된 데이터가 저장되었습니다.');
+    } else {
+        logger.error('오브젝트 저장소 암호화 적용 여부 검증에 실패했습니다.');
+    }
+
+    const serverA = Buffer.from(await streamToString(await readAsset(assetA.id)));
+    const serverB = Buffer.from(await streamToString(await readAsset(assetB.id)));
+    const serverC = Buffer.from(await streamToString(await readAsset(assetC.id)));
+    logger.info('serverA' + getBufferSummary(serverA));
+    logger.info('serverB' + getBufferSummary(serverB));
+    logger.info('serverC' + getBufferSummary(serverC));
+
+    if (Buffer.compare(Buffer.from(data), serverA) === 0 &&
+        Buffer.compare(serverA, serverB) === 0 &&
+        Buffer.compare(serverB, serverC) === 0) {
+        logger.info('서버에서 정상적으로 복호화된 데이터가 다운로드되었습니다.');
+    } else {
+        logger.error('서버 복호화 성공 여부 검증에 실패했습니다.');
+    }
 }
