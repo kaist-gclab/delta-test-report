@@ -1,6 +1,6 @@
 import { Logger } from '../logger';
 import { addAsset, readAsset, addProcessorType, registerProcessorNode, addJob, schedule, addJobResult, getJobExecution } from '../delta';
-import { getRandomText, streamToBuffer, streamToString } from './store';
+import { getRandomText, streamToString } from './store';
 import { getBufferSummary } from '../buffer';
 const logger = new Logger('nodes');
 const AssetSize = 16 * 1024; // 16K
