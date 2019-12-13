@@ -45,7 +45,7 @@ export async function getAssetCount() {
 }
 
 let keyCreated = false;
-export async function addAsset(data: string, encrypt: boolean = false): Promise<any> {
+export async function addAsset(data: string, encrypt: boolean = false, assetFormatKey: string = null): Promise<any> {
     const server = await createAppServer();
     if (encrypt) {
         if (!keyCreated) {
@@ -55,8 +55,16 @@ export async function addAsset(data: string, encrypt: boolean = false): Promise<
             keyCreated = true;
         }
     }
+    if (assetFormatKey) {
+        await server.post('api/1/assets/formats', {
+            key: assetFormatKey,
+            name: assetFormatKey,
+            description: assetFormatKey,
+        });
+    }
     const asset = (await server.post('api/1/assets', {
         content: data,
+        assetFormatKey,
         encryptionKeyName: encrypt ? "KeyName" : undefined,
     })).data;
 
