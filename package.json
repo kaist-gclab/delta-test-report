@@ -19,13 +19,13 @@
   },
   "homepage": "https://github.com/kaist-gclab/delta-test-report#readme",
   "dependencies": {
-    "@types/minio": "^7.0.5",
-    "@types/node": "^13.11.0",
+    "@types/minio": "^7.0.6",
+    "@types/node": "^14.0.23",
     "axios": "^0.19.2",
     "chai": "^4.2.0",
-    "minio": "^7.0.15",
-    "moment": "^2.24.0",
-    "ts-node": "^8.8.2",
-    "typescript": "^3.8.3"
+    "minio": "^7.0.16",
+    "moment": "^2.27.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   }
 }
