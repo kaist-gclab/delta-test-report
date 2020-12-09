@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source env.sh
 
 cd "$DIR/delta-server/config" && \
     rm -rf $DELTA_POSTGRES_DATA_DIRECTORY && \
@@ -16,3 +17,9 @@ cd "$DIR/delta-server/Delta" && \
     source ./remote.sh
 
 cd "$DIR/delta-processor-null" && ./build.sh
+
+cp "$DIR/env-web" "$DIR/delta-web/delta-web/.env"
+cd "$DIR/delta-web/delta-web" && \
+    DELTA_WEB_RUN_OPTIONS="-p $DELTA_WEB_PORT:80"
+    ./build.sh && \
+    source remote.sh
