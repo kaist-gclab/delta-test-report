@@ -60,7 +60,7 @@ export async function run() {
         { url: '/encryption-keys/list', title: '암호화 키 목록', fileName: '22' },
         { url: '/encryption-keys/detail', title: '암호화 키 상세 조회', fileName: '23' },
         { url: '/monitoring/dashboard', title: '모니터링 대시보드', fileName: '24' },
-        { url: '/monitoring/object-storage', title: '오브젝트 저장소 모니터 ', fileName: '25' },
+        { url: '/monitoring/object-storage', title: '오브젝트 저장소 모니터', fileName: '25' },
         { url: '/monitoring/processor-node', title: '처리기 노드 모니터', fileName: '26' },
         { url: '/monitoring/jobs', title: '작업 모니터', fileName: '27' },
         { url: '/logout', title: '로그인이 필요합니다.', fileName: '28' },
