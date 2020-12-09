@@ -60,9 +60,8 @@ typings/
 # next.js build output
 .next
 
-dist/
-
 delta-object-storage/
 delta-processor-null/
 delta-server/
 delta-web/
+output/
