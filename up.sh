@@ -23,3 +23,7 @@ cd "$DIR/delta-web/delta-web" && \
     DELTA_WEB_RUN_OPTIONS="-p $DELTA_WEB_PORT:80"
     ./build.sh && \
     source remote.sh
+
+RENDERER_BASE_IMAGE="kaistgclab/delta-renderer-base"
+docker rmi $RENDERER_BASE_IMAGE
+docker pull $RENDERER_BASE_IMAGE
