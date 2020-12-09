@@ -26,7 +26,7 @@ echo "3차원 기하 모델 프로세싱 프레임워크를 다운로드합니�
 echo "3차원 기하 모델 프로세싱 프레임워크를 빌드합니다." | tee -a log.txt
 ./up.sh
 
-DATABASE_INIT_DELAY="20"
+DATABASE_INIT_DELAY="60"
 echo "데이터베이스 서버 초기화 작업이 완료될 수 있도록 $DATABASE_INIT_DELAY 초 더 기다립니다." | tee -a log.txt
 sleep $DATABASE_INIT_DELAY
 
