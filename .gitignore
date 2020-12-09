@@ -61,3 +61,8 @@ typings/
 .next
 
 dist/
+
+delta-object-storage/
+delta-processor-null/
+delta-server/
+delta-web/
