@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ $DELTA_TEST_MODE = "LOCAL" ]; then
+if [ "$DELTA_TEST_MODE" = "LOCAL" ]; then
     rsync -r --exclude=node_modules --exclude=.git ../delta-server .
     rsync -r --exclude=node_modules --exclude=.git ../delta-object-storage .
     rsync -r --exclude=node_modules --exclude=.git ../delta-processor-null .
