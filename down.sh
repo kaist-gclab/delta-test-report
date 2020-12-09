@@ -8,4 +8,9 @@ docker rm $CONTAINER_NAMES
 rm -rf "$TEMP/test-object-storage-data"
 rm -rf "$TEMP/postgres-test"
 
-rm -rf ./delta-server/ ./delta-object-storage/ ./delta-processor-null/ ./delta-web/
+rm -rf \
+    ./delta-server/ \
+    ./delta-object-storage/ \
+    ./delta-processor-null/ \
+    ./delta-web/ \
+    ./delta-renderer/
