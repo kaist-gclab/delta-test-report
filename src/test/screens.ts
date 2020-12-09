@@ -63,7 +63,6 @@ export async function run() {
         { url: '/monitoring/object-storage', title: '오브젝트 저장소 모니터', fileName: '25' },
         { url: '/monitoring/processor-node', title: '처리기 노드 모니터', fileName: '26' },
         { url: '/monitoring/jobs', title: '작업 모니터', fileName: '27' },
-        { url: '/logout', title: '로그인이 필요합니다.', fileName: '28' },
     ];
 
     for (const screen of screens) {
