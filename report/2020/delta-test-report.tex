@@ -98,7 +98,7 @@
 평가 시점 현재 GitHub을 활용하여 관리 및 공개하고 있는 자동 테스트 스크립트 저장소 main branch의 최신 소스 코드를 평가 직전 clone하였다. 평가 시점에 받은 실제 Git 커밋은 아래 표와 같다. 이 저장소의 자동 테스트 스크립트는 다시 테스트 실행 시점 최신 소스 코드를 clone한다.
 
 \begin{tablekeyvalue}{0.3}{0.7}
-kaist-gclab/delta-test-report & TODO \\ \hline
+kaist-gclab/delta-test-report & eda13dbad0260b34384eaffd036074fc7a5a948e \\ \hline
 \end{tablekeyvalue}
 
 \section{평가 방법}
@@ -199,7 +199,7 @@ npm & 6.14.9 \\ \hline
 \end{enumerate}
 
 \subsubsection{소스 코드 검사}
-본 시스템은 InfluxData가 공식적으로 제공하는 InfluxDB.Client를 이용하여 InfluxDB와 연결하고 있으며, continuous query 기능을 이용하여 다운 샘플링을 수행하고 있다. 예를 들어, 본 프레임워크는 오브젝트 저장소의 전체 크기를 수집하고 있으며, 실제 질의문의 내용은 아래와 같다. Continuous query에서는 GROUP BY time()을 이용하여 나타내며, 15m는 15분을 의미한다.
+본 시스템은 InfluxData가 공식적으로 제공하는 InfluxDB.Client를 이용하여 InfluxDB와 연결하고 있으며, continuous query 기능을 이용하여 다운 샘플링을 수행하고 있다. 예를 들어, 본 프레임워크는 오브젝트 저장소의 전체 크기를 수집하고 있으며, 실제 질의문의 내용은 아래와 같다. Continuous query에서는 그룹화 설정을 GROUP BY time()로 나타내며, 15m는 15분을 의미한다.
 
 \begin{verbatim}
 CREATE CONTINUOUS QUERY "downsample-object-storage" ON "delta"
