@@ -22,7 +22,7 @@
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^16.4.10",
     "@types/puppeteer": "^5.4.4",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "chai": "^4.3.4",
     "minio": "^7.0.18",
     "mkdirp": "^1.0.4",
