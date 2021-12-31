@@ -24,7 +24,7 @@
     "@types/puppeteer": "^5.4.4",
     "axios": "^0.24.0",
     "chai": "^4.3.4",
-    "minio": "^7.0.18",
+    "minio": "^7.0.25",
     "mkdirp": "^1.0.4",
     "moment": "^2.29.1",
     "puppeteer": "^10.1.0",
