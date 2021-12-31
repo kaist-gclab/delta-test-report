@@ -27,8 +27,8 @@
     "minio": "^7.0.25",
     "mkdirp": "^1.0.4",
     "moment": "^2.29.1",
-    "puppeteer": "^10.1.0",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
+    "puppeteer": "^13.0.1",
   }
 }
