@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/kaist-gclab/delta-test-report#readme",
   "dependencies": {
-    "@types/minio": "^7.0.9",
+    "@types/minio": "^7.0.11",
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^16.4.10",
     "@types/puppeteer": "^5.4.4",
