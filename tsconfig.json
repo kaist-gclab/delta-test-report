@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "allowJs": false,
-        "target": "ES2021",
+        "target": "ES2022",
         "lib": [
-            "ES2021",
+            "ES2022",
             "dom"
         ],
         "module": "commonjs",
