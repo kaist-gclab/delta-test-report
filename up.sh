@@ -23,7 +23,7 @@ source env.sh
 ) &
 
 (
-    cd "$DIR/delta-processor-null" && ./test-ci.sh
+    cd "$DIR/delta-processor-null" && docker build .
 ) &
 
 (
