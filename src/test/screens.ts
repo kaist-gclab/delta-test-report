@@ -22,6 +22,8 @@ export async function run() {
     });
 
     const page = await browser.newPage();
+    await page.setViewport({ width: 1024, height: 768 });
+
     const url = `http://localhost:${process.env.DELTA_WEB_PORT}/`;
     logger.info(`웹 서버 주소 ${url}`);
 
