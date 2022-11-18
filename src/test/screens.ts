@@ -37,7 +37,7 @@ export async function run() {
     logger.info('로그인 성공');
 
     const screens = [
-        { url: '/', title: '시작', fileName: '02' },
+        { url: '/start', title: '시작', fileName: '02' },
         { url: '/help', title: '도움말', fileName: '03' },
         { url: '/settings/user', title: '사용자 설정', fileName: '04' },
         { url: '/settings/system', title: '시스템 설정', fileName: '05' },
