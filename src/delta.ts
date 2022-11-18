@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { Stream } from 'stream';
 import { Logger } from './logger';
 const logger = new Logger('delta');
