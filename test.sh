@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 source env.sh
 
-npm install && npm start
+pnpm install && pnpm start
