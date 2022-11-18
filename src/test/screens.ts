@@ -66,9 +66,7 @@ export async function run() {
     ];
 
     for (const screen of screens) {
-        const link = await page.waitForSelector(`a[href="${screen.url}"]`);
-        logger.info(`${screen.title} 페이지 메뉴 항목 발견`);
-        await link.click();
+        await page.goto(new URL(screen.url, url).href);
         logger.info(`${screen.title} 페이지로 이동 시작`);
         await waitForH1(page, screen.title);
         logger.info(`${screen.title} 페이지로 이동 성공`);
