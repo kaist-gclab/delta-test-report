@@ -10,6 +10,7 @@ echo "데이터베이스 서버, 웹 서버 등 기본적으로 필요한 이미
 
 docker pull ubuntu:22.04 &
 docker pull node:18-alpine &
+docker pull node:18-slim &
 docker pull mcr.microsoft.com/dotnet/sdk:7.0-alpine &
 docker pull mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine &
 docker pull postgres:15 &
