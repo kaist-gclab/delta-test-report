@@ -8,11 +8,11 @@ echo "이전 테스트에서 제거되지 않았을지도 모르는 잔여 파�
 
 echo "데이터베이스 서버, 웹 서버 등 기본적으로 필요한 이미지를 다운로드합니다. 이 단계는 서버 구축 시간에 포함하지 않습니다."
 
-docker pull postgres:13 &
 docker pull ubuntu:22.04 &
 docker pull node:18-alpine &
 docker pull mcr.microsoft.com/dotnet/sdk:7.0-alpine &
 docker pull mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine &
+docker pull postgres:15 &
 docker pull minio/minio &
 docker pull caddy:2-alpine &
 wait
