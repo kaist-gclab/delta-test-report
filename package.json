@@ -21,7 +21,7 @@
     "@types/minio": "^7.0.14",
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^18.11.9",
-    "axios": "^1.2.0-alpha.1",
+    "axios": "^1.6.0",
     "chai": "^4.3.7",
     "minio": "^7.0.32",
     "mkdirp": "^1.0.4",
