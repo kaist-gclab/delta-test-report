@@ -20,7 +20,6 @@
   "dependencies": {
     "@types/minio": "^7.1.0",
     "@types/mkdirp": "^1.0.2",
-    "minio": "^7.0.32",
     "mkdirp": "^1.0.4",
     "moment": "^2.29.4",
     "puppeteer": "^19.2.2",
@@ -29,5 +28,6 @@
     "@types/node": "^20.10.6",
     "axios": "^1.6.3",
     "chai": "^5.0.0",
+    "minio": "^7.1.3",
   }
 }
