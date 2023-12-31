@@ -20,7 +20,6 @@
   "dependencies": {
     "@types/minio": "^7.1.0",
     "@types/mkdirp": "^1.0.2",
-    "axios": "^1.6.0",
     "chai": "^4.3.7",
     "minio": "^7.0.32",
     "mkdirp": "^1.0.4",
@@ -29,5 +28,6 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.9.3"
     "@types/node": "^20.10.6",
+    "axios": "^1.6.3",
   }
 }
